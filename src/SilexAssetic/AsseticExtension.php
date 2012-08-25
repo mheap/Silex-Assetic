@@ -1,8 +1,8 @@
 <?php
 
-namespace SilexExtension;
+namespace SilexAssetic;
 
-use SilexExtension\Assetic\Dumper;
+use SilexAssetic\Assetic\Dumper;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;

@@ -65,7 +65,7 @@ Services
         array('output' => 'css/extra')  
     ));
 
-* **assetic.dumper**:  Instance of SilexExtension\Assetic\Dumper. Contains methods
+* **assetic.dumper**:  Instance of SilexAssetic\Assetic\Dumper. Contains methods
   to dump assets.
   
 Registering
@@ -76,7 +76,7 @@ directory.
 
   Example registration and configuration::
 
-    $app->register(new SilexExtension\AsseticExtension(), array(
+    $app->register(new SilexAssetic\AsseticExtension(), array(
         'assetic.class_path' => __DIR__.'/vendor/assetic/src',
         'assetic.path_to_web' => __DIR__ . '/assets',
         'assetic.options' => array(

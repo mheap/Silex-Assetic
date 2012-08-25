@@ -1,8 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../functions.php';
-require_once __DIR__ . '/../silex.phar';
-
 $app = new Silex\Application();
 
 $app->register(new Silex\Extension\TwigExtension(), array(
@@ -10,8 +7,8 @@ $app->register(new Silex\Extension\TwigExtension(), array(
     'twig.path'       => __DIR__ . '/twig'
 ));
     
-$app['autoloader']->registerNamespace('SilexExtension', __DIR__ . '/../src');
-$app->register(new SilexExtension\AsseticExtension(), array(
+$app['autoloader']->registerNamespace('SilexAssetic', __DIR__ . '/../src');
+$app->register(new SilexAssetic\AsseticExtension(), array(
     'assetic.class_path' => __DIR__.'/../vendor/assetic/src',
     'assetic.path_to_web' => __DIR__ . '/assetic/output',
     'assetic.options' => array(

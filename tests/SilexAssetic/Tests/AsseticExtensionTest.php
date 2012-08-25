@@ -1,10 +1,10 @@
 <?php
 
-namespace SilexExtension\Tests;
+namespace SilexAssetic\Tests;
 
 use Silex\Application;
 
-use SilexExtension\AsseticExtension;
+use SilexAssetic\AsseticExtension;
 
 use Symfony\Component\HttpFoundation\Request;
 
