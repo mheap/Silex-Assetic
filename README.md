@@ -1,4 +1,4 @@
-Silex-Markdown
+Silex-Assetic
 ================
 
 [![Build Status](https://secure.travis-ci.org/mheap/Silex-Assetic.png?branch=master)](http://travis-ci.org/mheap/Silex-Assetic)
