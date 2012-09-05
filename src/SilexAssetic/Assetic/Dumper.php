@@ -98,7 +98,9 @@ class Dumper
         foreach ($am->getNames() as $name) {
             $asset   = $am->get($name);
             
-            $formula = $am->getFormula($name);
+            if ( $am instanceof LazyAssetManager ) {
+                $formula = $am->getFormula($name);
+            }
             
             $this->writer->writeAsset($asset);
             
