@@ -51,6 +51,7 @@ class AsseticExtension implements ServiceProviderInterface
             $factory = new AssetFactory($app['assetic.path_to_web'], $options['debug']);
             $factory->setAssetManager($app['assetic.asset_manager']);
             $factory->setFilterManager($app['assetic.filter_manager']);
+
             return $factory;
         });
 
@@ -61,12 +62,12 @@ class AsseticExtension implements ServiceProviderInterface
             if (!isset($app['assetic.options']['auto_dump_assets'])) {
                 return;
             }
-            
+
             $helper = $app['assetic.dumper'];
             if (isset($app['twig'])) {
                 $helper->addTwigAssets();
             }
-            
+
             $helper->dumpAssets();
         });
 
@@ -88,6 +89,7 @@ class AsseticExtension implements ServiceProviderInterface
             $manager = new AssetManager();
 
             call_user_func_array($assets, array($manager, $app['assetic.filter_manager']));
+
             return $manager;
         });
 
@@ -102,6 +104,7 @@ class AsseticExtension implements ServiceProviderInterface
             $manager = new FilterManager();
 
             call_user_func_array($filters, array($manager));
+
             return $manager;
         });
 
@@ -121,7 +124,7 @@ class AsseticExtension implements ServiceProviderInterface
             foreach ($formulae as $name => $formula) {
                 $lazy->setFormula($name, $formula);
             }
-           
+
             if ($options['formulae_cache_dir'] !== null && $options['debug'] !== true) {
                 foreach ($lazy->getNames() as $name) {
                     $lazy->set($name, new AssetCache(
@@ -130,37 +133,41 @@ class AsseticExtension implements ServiceProviderInterface
                     ));
                 }
             }
+
             return $lazy;
         });
-        
+
         $app['assetic.dumper'] = $app->share(function () use ($app) {
             return new Dumper($app['assetic.asset_manager'], $app['assetic.lazy_asset_manager'], $app['assetic.asset_writer']);
         });
 
-        if(isset($app['twig'])) {
+        if (isset($app['twig'])) {
             $app['twig'] = $app->share($app->extend('twig', function ($twig, $app) {
                 $twig->addExtension(new TwigAsseticExtension($app['assetic.factory']));
+
                 return $twig;
             }));
-            
+
             $app['assetic.lazy_asset_manager'] = $app->share($app->extend('assetic.lazy_asset_manager', function ($am, $app) {
                 $am->setLoader('twig', new TwigFormulaLoader($app['twig']));
+
                 return $am;
             }));
-            
+
             $app['assetic.dumper'] = $app->share($app->extend('assetic.dumper', function ($helper, $app) {
                 $helper->setTwig($app['twig'], $app['twig.loader.filesystem']);
+
                 return $helper;
-            }));     
+            }));
         }
     }
-  
+
     /**
      * Bootstraps the application.
      *
      * @param \Silex\Application $app The application
      */
-    function boot(Application $app)
+    public function boot(Application $app)
     {
     }
 }

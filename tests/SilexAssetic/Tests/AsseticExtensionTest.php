@@ -94,6 +94,7 @@ class AsseticExtensionTest extends \PHPUnit_Framework_TestCase
 
         $app['twig'] = $app->share(function() {
             $loader = new \Twig_Loader_String();
+
             return new \Twig_Environment($loader);
         });
 
