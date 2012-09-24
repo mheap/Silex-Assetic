@@ -12,7 +12,7 @@ Parameters
 
 * **assetic.options**: An associative array of assetic options.
 
-* **assetic.options => debug** (defaults to false, optional): 
+* **assetic.options => debug** (defaults to false, optional):
 
 * **assetic.options => formulae_cache_dir** (optional): When formulae_cache_dir is set, Assetic
   will cache assets generated trough formulae in this folder to improve performance. Remember,
@@ -27,7 +27,7 @@ Parameters
 * **assetic.filters** (optional): Used for configuring filters on registration, just provide an 'app protected'
   callback $app->protect(function($fm) { }) and add your filters inside the function to filter manager ($fm->set())
 
-* **assetic.assets** (optional): Used for configuring assets on registration, just provide an 'app protected' 
+* **assetic.assets** (optional): Used for configuring assets on registration, just provide an 'app protected'
   callback $app->protect(function($am) { }) and add your assets inside the function to asset manager ($am->set())
 
 Services
@@ -43,7 +43,7 @@ Services
 
     $asset = new FileAsset(__DIR__ . '/extra/*.css');
     $app['assetic.asset_manager']->set('extra_css', $asset);
-    
+
 * **assetic.filter_manager**: Instance of FilterManager
   for adding filters (implements FilterInterface)
 
@@ -62,12 +62,12 @@ Services
     $app['assetic.lazy_asset_manager']->setFormula('extra_css', array(
         array(__DIR__ . '/extra/*.css'),
         array('yui_css'),
-        array('output' => 'css/extra')  
+        array('output' => 'css/extra')
     ));
 
 * **assetic.dumper**:  Instance of SilexAssetic\Assetic\Dumper. Contains methods
   to dump assets.
-  
+
 Registering
 -----------
 
@@ -89,11 +89,11 @@ directory.
             $fm->set('yui_js', new Assetic\Filter\Yui\JsCompressorFilter(
                 '/usr/share/yui-compressor/yui-compressor.jar'
             ));
-        }),    
+        }),
         'assetic.assets' => $app->protect(function($am, $fm) {
             $am->set('styles', new Assetic\Asset\AssetCache(
                 new Assetic\Asset\GlobAsset(
-                    __DIR__ . '/resources/css/*.css', 
+                    __DIR__ . '/resources/css/*.css',
                     array($fm->get('yui_css'))
                 ),
                 new Assetic\Cache\FilesystemCache(__DIR__ . '/cache/assetic')
