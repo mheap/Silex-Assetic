@@ -6,7 +6,7 @@ $app->register(new Silex\Extension\TwigExtension(), array(
     'twig.class_path' => __DIR__ . '/../vendor/twig/lib',
     'twig.path'       => __DIR__ . '/twig'
 ));
-    
+
 $app['autoloader']->registerNamespace('SilexAssetic', __DIR__ . '/../src');
 $app->register(new SilexAssetic\AsseticExtension(), array(
     'assetic.class_path' => __DIR__.'/../vendor/assetic/src',
@@ -22,12 +22,12 @@ $app->register(new SilexAssetic\AsseticExtension(), array(
         $fm->set('yui_js', new Assetic\Filter\Yui\JsCompressorFilter(
             '/usr/share/yui-compressor/yui-compressor.jar'
         ));
-    }),   
+    }),
     'assetic.assets' => $app->protect(function($am, $fm) {
-        
+
         $am->set('styles', new Assetic\Asset\AssetCache(
             new Assetic\Asset\GlobAsset(
-                __DIR__ . '/assetic/resources/css/*.css', 
+                __DIR__ . '/assetic/resources/css/*.css',
                 array($fm->get('yui_css'))
             ),
             new Assetic\Cache\FilesystemCache(__DIR__ . '/assetic/cache')
@@ -36,7 +36,7 @@ $app->register(new SilexAssetic\AsseticExtension(), array(
     })
 ));
 
-$app->get('/', function () use($app) {
+$app->get('/', function () use ($app) {
     return "Hello!";
 });
 
