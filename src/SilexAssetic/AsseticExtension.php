@@ -21,16 +21,21 @@ class AsseticExtension implements ServiceProviderInterface
 {
     public function register(Application $app)
     {
-        $app['assetic.options'] = array_replace(array(
-            'debug' => false,
-            'formulae_cache_dir' => null,
-            'auto_dump_assets' => true,
-        ), isset($app['assetic.options']) ? $app['assetic.options'] : array());
+        $app['assetic.options'] = array();
+        $app['assetic.assets'] = $app->protect(function() {});
 
         /**
-         * Asset Factory conifguration happens here
+         * Asset Factory configuration happens here
          */
         $app['assetic'] = $app->share(function () use ($app) {
+            $app['assetic.options'] = array_replace(
+                array(
+                    'debug' => false,
+                    'formulae_cache_dir' => null,
+                    'auto_dump_assets' => true,
+                ), $app['assetic.options']
+            );
+
             // initializing lazy asset manager
             if (isset($app['assetic.formulae']) &&
                !is_array($app['assetic.formulae']) &&
@@ -47,28 +52,11 @@ class AsseticExtension implements ServiceProviderInterface
          * @return Assetic\Factory\AssetFactory
          */
         $app['assetic.factory'] = $app->share(function() use ($app) {
-            $options = $app['assetic.options'];
-            $factory = new AssetFactory($app['assetic.path_to_web'], $options['debug']);
+            $factory = new AssetFactory($app['assetic.path_to_web'], $app['assetic.options']['debug']);
             $factory->setAssetManager($app['assetic.asset_manager']);
             $factory->setFilterManager($app['assetic.filter_manager']);
 
             return $factory;
-        });
-
-        /**
-         * Writes down all lazy asset manager and asset managers assets
-         */
-        $app->after(function() use ($app) {
-            if (!isset($app['assetic.options']['auto_dump_assets'])) {
-                return;
-            }
-
-            $helper = $app['assetic.dumper'];
-            if (isset($app['twig'])) {
-                $helper->addTwigAssets();
-            }
-
-            $helper->dumpAssets();
         });
 
         /**
@@ -85,10 +73,9 @@ class AsseticExtension implements ServiceProviderInterface
          * your assets inside the function to asset manager ($am->set())
          */
         $app['assetic.asset_manager'] = $app->share(function () use ($app) {
-            $assets = isset($app['assetic.assets']) ? $app['assetic.assets'] : function() {};
             $manager = new AssetManager();
 
-            call_user_func_array($assets, array($manager, $app['assetic.filter_manager']));
+            call_user_func_array($app['assetic.assets'], array($manager, $app['assetic.filter_manager']));
 
             return $manager;
         });
@@ -143,7 +130,7 @@ class AsseticExtension implements ServiceProviderInterface
 
         if (isset($app['twig'])) {
             $app['twig'] = $app->share($app->extend('twig', function ($twig, $app) {
-                $twig->addExtension(new TwigAsseticExtension($app['assetic.factory']));
+                $twig->addExtension(new TwigAsseticExtension($app['assetic']));
 
                 return $twig;
             }));
@@ -169,5 +156,22 @@ class AsseticExtension implements ServiceProviderInterface
      */
     public function boot(Application $app)
     {
+        /**
+         * Writes down all lazy asset manager and asset managers assets
+         */
+        $app->after(function() use ($app) {
+            // Boot assetic
+            $assetic = $app['assetic'];
+
+            if (!isset($app['assetic.options']['auto_dump_assets'])) {
+                return;
+            }
+
+            $helper = $app['assetic.dumper'];
+            if (isset($app['twig'])) {
+                $helper->addTwigAssets();
+            }
+            $helper->dumpAssets();
+        });
     }
 }
