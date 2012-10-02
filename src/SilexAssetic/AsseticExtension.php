@@ -163,7 +163,7 @@ class AsseticExtension implements ServiceProviderInterface
             // Boot assetic
             $assetic = $app['assetic'];
 
-            if (!isset($app['assetic.options']['auto_dump_assets'])) {
+            if (!isset($app['assetic.options']['auto_dump_assets']) || !$app['assetic.options']['auto_dump_assets']) {
                 return;
             }
 
