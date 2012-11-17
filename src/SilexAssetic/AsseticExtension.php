@@ -22,7 +22,9 @@ class AsseticExtension implements ServiceProviderInterface
     public function register(Application $app)
     {
         $app['assetic.options'] = array();
-        $app['assetic.assets'] = $app->protect(function() {});
+        if (!isset($app['assetic.assets'])) {
+            $app['assetic.assets'] = $app->protect(function() {});
+        }
 
         /**
          * Asset Factory configuration happens here
