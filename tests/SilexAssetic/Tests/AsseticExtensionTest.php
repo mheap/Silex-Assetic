@@ -20,14 +20,22 @@ class AsseticExtensionTest extends \PHPUnit_Framework_TestCase
     public function testEverythingLoaded()
     {
         $app = new Application();
-        $app->register(new AsseticExtension(), array(
-            'assetic.path_to_web' => sys_get_temp_dir()
-        ));
-        $app->get('/', function () use ($app) {
-            return 'AsseticExtensionTest';
-        });
 
-        $request = Request::create('/');
+        $app->register(
+            new AsseticExtension(),
+            array(
+                'assetic.path_to_web' => sys_get_temp_dir()
+            )
+        );
+
+        $app->get(
+            '/',
+            function () use ($app) {
+                return 'AsseticExtensionTest';
+            }
+        );
+
+        $request  = Request::create('/');
         $response = $app->handle($request);
 
         $this->assertInstanceOf('Assetic\Factory\AssetFactory', $app['assetic']);
@@ -40,17 +48,27 @@ class AsseticExtensionTest extends \PHPUnit_Framework_TestCase
     public function testFilterFormRegistration()
     {
         $app = new Application();
-        $app->register(new AsseticExtension(), array(
-            'assetic.path_to_web' => sys_get_temp_dir(),
-            'assetic.filters' => $app->protect(function($fm) {
-                $fm->set('test_filter', new \Assetic\Filter\CssMinFilter());
-            })
-        ));
-        $app->get('/', function () use ($app) {
-            return 'AsseticExtensionTest';
-        });
 
-        $request = Request::create('/');
+        $app->register(
+            new AsseticExtension(),
+            array(
+                'assetic.path_to_web' => sys_get_temp_dir(),
+                'assetic.filters' => $app->protect(
+                    function ($fm) {
+                        $fm->set('test_filter', new \Assetic\Filter\CssMinFilter());
+                    }
+                )
+            )
+        );
+
+        $app->get(
+            '/',
+            function () use ($app) {
+                return 'AsseticExtensionTest';
+            }
+        );
+
+        $request  = Request::create('/');
         $response = $app->handle($request);
 
         $this->assertTrue($app['assetic.filter_manager']->has('test_filter'));
@@ -60,19 +78,29 @@ class AsseticExtensionTest extends \PHPUnit_Framework_TestCase
     public function testAssetFormRegistration()
     {
         $app = new Application();
-        $app->register(new AsseticExtension(), array(
-            'assetic.path_to_web' => sys_get_temp_dir(),
-            'assetic.assets' => $app->protect(function($am) {
-                $asset = new \Assetic\Asset\FileAsset(__FILE__);
-                $asset->setTargetPath(md5(__FILE__));
-                $am->set('test_asset', $asset);
-            })
-        ));
-        $app->get('/', function () {
-            return 'AsseticExtensionTest';
-        });
 
-        $request = Request::create('/');
+        $app->register(
+            new AsseticExtension(),
+            array(
+                'assetic.path_to_web' => sys_get_temp_dir(),
+                'assetic.assets'      => $app->protect(
+                    function ($am) {
+                        $asset = new \Assetic\Asset\FileAsset(__FILE__);
+                        $asset->setTargetPath(md5(__FILE__));
+                        $am->set('test_asset', $asset);
+                    }
+                )
+            )
+        );
+
+        $app->get(
+            '/',
+            function () {
+                return 'AsseticExtensionTest';
+            }
+        );
+
+        $request  = Request::create('/');
         $response = $app->handle($request);
 
         $this->assertTrue($app['assetic.asset_manager']->has('test_asset'));
@@ -88,15 +116,18 @@ class AsseticExtensionTest extends \PHPUnit_Framework_TestCase
 
         $app = new Application();
 
-        $app['twig'] = $app->share(function() {
-            $loader = new \Twig_Loader_String();
+        $app['twig'] = $app->share(
+            function () {
+                return new \Twig_Environment(new \Twig_Loader_String());
+            }
+        );
 
-            return new \Twig_Environment($loader);
-        });
-
-        $app->register(new AsseticExtension(), array(
-            'assetic.path_to_web' => sys_get_temp_dir()
-        ));
+        $app->register(
+            new AsseticExtension(),
+            array(
+                'assetic.path_to_web' => sys_get_temp_dir()
+            )
+        );
 
         $this->assertInstanceOf('Assetic\\Extension\\Twig\\AsseticExtension', $app['twig']->getExtension('assetic'));
     }
