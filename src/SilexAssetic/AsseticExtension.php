@@ -21,11 +21,7 @@ class AsseticExtension implements ServiceProviderInterface
 {
     public function register(Application $app)
     {
-        // See if the options key has already been defined and
-        // if it has then use that.
-        try {
-            $app['assetic.options'];
-        } catch (\InvalidArgumentException $e) {
+        if (!isset($app['assetic.options'])) {
             $app['assetic.options'] = array();
         }
 
