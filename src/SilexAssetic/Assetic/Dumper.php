@@ -4,10 +4,10 @@ namespace SilexAssetic\Assetic;
 
 use Symfony\Component\Finder\Finder;
 
-use Assetic\Factory\LazyAssetManager,
-    Assetic\AssetWriter,
-    Assetic\AssetManager,
-    Assetic\Extension\Twig\TwigResource;
+use Assetic\Factory\LazyAssetManager;
+use Assetic\AssetWriter;
+use Assetic\AssetManager;
+use Assetic\Extension\Twig\TwigResource;
 
 class Dumper
 {
