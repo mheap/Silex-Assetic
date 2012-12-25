@@ -21,7 +21,10 @@ class AsseticExtension implements ServiceProviderInterface
 {
     public function register(Application $app)
     {
-        $app['assetic.options'] = array();
+        if (!isset($app['assetic.options'])) {
+            $app['assetic.options'] = array();
+        }
+
         if (!isset($app['assetic.assets'])) {
             $app['assetic.assets'] = $app->protect(
                 function () {
