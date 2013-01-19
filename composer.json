@@ -24,7 +24,7 @@
         "symfony/finder": "~2.1.0"
     },
     "require-dev": {
-        "silex/silex": "~1.0",
+        "silex/silex": "~1.0@dev",
         "twig/twig": "~1.2",
         "phpunit/phpunit": "~3.7.10"
     },
