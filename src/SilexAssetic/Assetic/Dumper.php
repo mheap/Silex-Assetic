@@ -67,7 +67,7 @@ class Dumper
         }
 
         $finder   = new Finder();
-        $iterator = $finder->files()->name('*.twig')->in($this->loader->getPaths());
+        $iterator = $finder->files()->name('/\.twig$/')->in($this->loader->getPaths());
 
         foreach ($iterator as $file) {
             $resource = new TwigResource($this->loader, $file->getRelativePathname());
