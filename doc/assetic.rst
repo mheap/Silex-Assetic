@@ -50,7 +50,7 @@ Services
   Example usage::
 
     $filter = new CssMinFilter();
-    $app['assetic.asset_manager']->set('css_min', $filter);
+    $app['assetic.filter_manager']->set('css_min', $filter);
 
 * **assetic.asset_writer**: If you need it, feel free to use.
 
