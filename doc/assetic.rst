@@ -1,7 +1,7 @@
-AsseticExtension
+AsseticServiceProvider
 ================
 
-The *AsseticExtension* provides powerful asset management
+The *AsseticServiceProvider* provides powerful asset management
 through Kris Wallsmith's `Assetic <https://github.com/kriswallsmith/assetic>`_
 library.
 
@@ -20,15 +20,6 @@ Parameters
 
 * **assetic.options => auto_dump_assets** (defaults to true,optional): Whether to write all the assets
   to filesystem on every request.
-
-* **assetic.class_path** (optional): Path to where the Assetic
-  library is located.
-
-* **assetic.filters** (optional): Used for configuring filters on registration, just provide an 'app protected'
-  callback $app->protect(function($fm) { }) and add your filters inside the function to filter manager ($fm->set())
-
-* **assetic.assets** (optional): Used for configuring assets on registration, just provide an 'app protected'
-  callback $app->protect(function($am) { }) and add your assets inside the function to asset manager ($am->set())
 
 Services
 --------
@@ -71,26 +62,28 @@ Services
 Registering
 -----------
 
-Make sure you place a copy of *Assetic* in the ``vendor/assetic``
-directory.
-
   Example registration and configuration::
 
-    $app->register(new SilexAssetic\AsseticExtension(), array(
-        'assetic.class_path' => __DIR__.'/vendor/assetic/src',
-        'assetic.path_to_web' => __DIR__ . '/assets',
-        'assetic.options' => array(
-        	'debug' => TRUE
-        ),
-        'assetic.filters' => $app->protect(function($fm) {
+    $app->register(new SilexAssetic\AsseticServiceProvider())
+
+    $app['assetic.path_to_web'] = __DIR__ . '/assets';
+    $app['assetic.options'] = array(
+    	'debug' => true,
+    );
+    $app['assetic.filter_manager'] = $app->share(
+        $app->extend('assetic.filter_manager', function($fm, $app) {
             $fm->set('yui_css', new Assetic\Filter\Yui\CssCompressorFilter(
                 '/usr/share/yui-compressor/yui-compressor.jar'
             ));
             $fm->set('yui_js', new Assetic\Filter\Yui\JsCompressorFilter(
                 '/usr/share/yui-compressor/yui-compressor.jar'
             ));
-        }),
-        'assetic.assets' => $app->protect(function($am, $fm) {
+
+            return $fm;
+        })
+    );
+    $app['assetic.asset_manager'] = $app->share(
+        $app->extend('assetic.asset_manager', function($am, $app) {
             $am->set('styles', new Assetic\Asset\AssetCache(
                 new Assetic\Asset\GlobAsset(
                     __DIR__ . '/resources/css/*.css',
@@ -99,6 +92,8 @@ directory.
                 new Assetic\Cache\FilesystemCache(__DIR__ . '/cache/assetic')
             ));
             $am->get('styles')->setTargetPath('css/styles.css');
+
+            return $am;
         })
-    ));
+    );
 
