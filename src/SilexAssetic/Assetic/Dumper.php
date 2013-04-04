@@ -68,12 +68,11 @@ class Dumper
 
         $finder   = new Finder();
         $twigNamespaces = $this->loader->getNamespaces();
-        $iterator = $finder->files()->name('/\.twig$/')->in($this->loader->getPaths());
 
         foreach ($twigNamespaces as $ns) {
 
             if ( count($this->loader->getPaths($ns)) > 0 ) {
-                $iterator = $finder->files()->name('*.twig')->in($this->loader->getPaths($ns));
+                $iterator = $finder->files()->name('/\.twig$/')->in($this->loader->getPaths($ns));
 
                 foreach ($iterator as $file) {
                     $resource = new TwigResource($this->loader, $file->getRelativePathname());
