@@ -67,8 +67,11 @@ class Dumper
         }
 
         $finder   = new Finder();
+<<<<<<< HEAD
         $twigNamespaces = $this->loader->getNamespaces();
+=======
         $iterator = $finder->files()->name('/\.twig$/')->in($this->loader->getPaths());
+>>>>>>> 00787801c12279717542a1b38e88a9fc21d43d17
 
         foreach ($twigNamespaces as $ns) {
 
