@@ -10,7 +10,7 @@ Create a composer.json in your projects root-directory::
 
     {
         "require": {
-            "mheap/Silex-Assetic": "*"
+            "mheap/Silex-Assetic": "dev-master@dev"
         }
     }
 
