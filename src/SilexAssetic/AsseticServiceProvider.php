@@ -28,7 +28,7 @@ class AsseticServiceProvider implements ServiceProviderInterface
          */
         $app['assetic'] = $app->share(function () use ($app) {
             $app['assetic.options'] = array_replace(array(
-                'debug'              => false,
+                'debug'              => $app['debug'],
                 'formulae_cache_dir' => null,
                 'auto_dump_assets'   => true,
             ), $app['assetic.options']);
