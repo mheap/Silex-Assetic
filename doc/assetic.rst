@@ -87,7 +87,7 @@ Registering
             $am->set('styles', new Assetic\Asset\AssetCache(
                 new Assetic\Asset\GlobAsset(
                     __DIR__ . '/resources/css/*.css',
-                    array($fm->get('yui_css'))
+                    array($app['assetic.filter_manager']->get('yui_css'))
                 ),
                 new Assetic\Cache\FilesystemCache(__DIR__ . '/cache/assetic')
             ));
