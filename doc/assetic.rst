@@ -64,7 +64,7 @@ Registering
 
   Example registration and configuration::
 
-    $app->register(new SilexAssetic\AsseticServiceProvider())
+    $app->register(new SilexAssetic\AsseticServiceProvider());
 
     $app['assetic.path_to_web'] = __DIR__ . '/assets';
     $app['assetic.options'] = array(
