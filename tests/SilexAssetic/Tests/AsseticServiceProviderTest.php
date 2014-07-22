@@ -3,13 +3,12 @@
 namespace SilexAssetic\Tests;
 
 use Silex\Application;
-
 use SilexAssetic\AsseticServiceProvider;
-
 use Symfony\Component\HttpFoundation\Request;
 
 class AsseticExtensionTest extends \PHPUnit_Framework_TestCase
 {
+
     public function setUp()
     {
         if (!class_exists('Assetic\\AssetManager')) {
@@ -40,17 +39,15 @@ class AsseticExtensionTest extends \PHPUnit_Framework_TestCase
 
     public function testFilterFormRegistration()
     {
-        $app = new Application();
+        $app                        = new Application();
         $app->register(new AsseticServiceProvider());
         $app['assetic.path_to_web'] = sys_get_temp_dir();
 
-        $app['assetic.filter_manager'] = $app->share(
-            $app->extend('assetic.filter_manager', function($fm, $app) {
-                $fm->set('test_filter', new \Assetic\Filter\CssMinFilter());
+        $app['assetic.filter_manager'] = $app->extend('assetic.filter_manager', function($fm, $app) {
+            $fm->set('test_filter', new \Assetic\Filter\CssMinFilter());
 
-                return $fm;
-            })
-        );
+            return $fm;
+        });
 
         $app->get('/', function () use ($app) {
             return 'AsseticExtensionTest';
@@ -65,19 +62,17 @@ class AsseticExtensionTest extends \PHPUnit_Framework_TestCase
 
     public function testAssetFormRegistration()
     {
-        $app = new Application();
+        $app                        = new Application();
         $app->register(new AsseticServiceProvider());
         $app['assetic.path_to_web'] = sys_get_temp_dir();
 
-        $app['assetic.asset_manager'] = $app->share(
-            $app->extend('assetic.asset_manager', function($am, $app) {
-                $asset = new \Assetic\Asset\FileAsset(__FILE__);
-                $asset->setTargetPath(md5(__FILE__));
-                $am->set('test_asset', $asset);
+        $app['assetic.asset_manager'] = $app->extend('assetic.asset_manager', function($am, $app) {
+            $asset = new \Assetic\Asset\FileAsset(__FILE__);
+            $asset->setTargetPath(md5(__FILE__));
+            $am->set('test_asset', $asset);
 
-                return $am;
-            })
-        );
+            return $am;
+        });
 
         $app->get('/', function () {
             return 'AsseticExtensionTest';
@@ -99,9 +94,9 @@ class AsseticExtensionTest extends \PHPUnit_Framework_TestCase
 
         $app = new Application();
 
-        $app['twig'] = $app->share(function () {
+        $app['twig'] = function () {
             return new \Twig_Environment(new \Twig_Loader_String());
-        });
+        };
 
         $app->register(new AsseticServiceProvider());
         $app['assetic.path_to_web'] = sys_get_temp_dir();
@@ -115,4 +110,5 @@ class AsseticExtensionTest extends \PHPUnit_Framework_TestCase
             unlink(sys_get_temp_dir() . '/' . md5(__FILE__));
         }
     }
+
 }
