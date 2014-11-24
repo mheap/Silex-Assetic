@@ -32,16 +32,20 @@ Services
 
   Example usage::
 
+```php
     $asset = new FileAsset(__DIR__ . '/extra/*.css');
     $app['assetic.asset_manager']->set('extra_css', $asset);
+```
 
 * **assetic.filter_manager**: Instance of FilterManager
   for adding filters (implements FilterInterface)
 
   Example usage::
 
+```php
     $filter = new CssMinFilter();
     $app['assetic.filter_manager']->set('css_min', $filter);
+```
 
 * **assetic.asset_writer**: If you need it, feel free to use.
 
@@ -50,11 +54,13 @@ Services
 
   Example usage::
 
+```php
     $app['assetic.lazy_asset_manager']->setFormula('extra_css', array(
         array(__DIR__ . '/extra/*.css'),
         array('yui_css'),
         array('output' => 'css/extra')
     ));
+```
 
 * **assetic.dumper**:  Instance of SilexAssetic\Assetic\Dumper. Contains methods
   to dump assets.
@@ -64,6 +70,7 @@ Registering
 
   Example registration and configuration::
 
+```php
     $app->register(new SilexAssetic\AsseticServiceProvider());
 
     $app['assetic.path_to_web'] = __DIR__ . '/assets';
@@ -96,4 +103,4 @@ Registering
             return $am;
         })
     );
-
+```
