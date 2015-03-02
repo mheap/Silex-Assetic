@@ -8,7 +8,7 @@ Parameters
 
 * ```assetic.path_to_web```: Location where to dump all generated files.
 * ```assetic.options```: An associative array of assetic options.
-* ```assetic.options => debug``` (defaults to false, optional):
+ * ```assetic.options => debug``` (defaults to false, optional):
  * ```assetic.options => formulae_cache_dir``` (optional): When ```formulae_cache_dir``` is set, Assetic will cache assets generated trough formulae in this folder to improve performance. Remember, assets added trough the AssetManager need to care about their own cache.
  * ```assetic.options => auto_dump_assets``` (defaults to true,optional): Whether to write all the assets to filesystem on every request.
 
@@ -18,16 +18,16 @@ Services
 * ```assetic```: Instance of AssetFactory for holding filters and assets (not formulae).
 * ```assetic.asset_manager```: Instance of AssetManager for adding assets (implements AssetInterface).
 
-Example usage:
-```php
+ Example usage:
+ ```php
 <?php
 $asset = new FileAsset(__DIR__ . '/extra/*.css');
 $app['assetic.asset_manager']->set('extra_css', $asset);
 ```
 * ```assetic.filter_manager```: Instance of FilterManager for adding filters (implements FilterInterface)
 
-Example usage:
-```php
+ Example usage:
+ ```php
 <?php
 $filter = new CssMinFilter();
 $app['assetic.filter_manager']->set('css_min', $filter);
@@ -36,8 +36,8 @@ $app['assetic.filter_manager']->set('css_min', $filter);
 * ```assetic.asset_writer```: If you need it, feel free to use
 * ```assetic.lazy_asset_manager```:  Instance of LazyAssetManager to enable passing-in assets as formulae
 
-Example usage:
-```php
+ Example usage:
+ ```php
 <?php
 $app['assetic.lazy_asset_manager']->setFormula('extra_css', array(
     array(__DIR__ . '/extra/*.css'),
