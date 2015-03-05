@@ -4,8 +4,11 @@ namespace SilexAssetic;
 
 use SilexAssetic\Assetic\Dumper;
 
+use Pimple\Container;
+use Pimple\ServiceProviderInterface;
+
 use Silex\Application;
-use Silex\ServiceProviderInterface;
+use Silex\Api\BootableProviderInterface;
 
 use Assetic\AssetManager;
 use Assetic\FilterManager;
@@ -17,16 +20,16 @@ use Assetic\Cache\FilesystemCache;
 use Assetic\Extension\Twig\TwigFormulaLoader;
 use Assetic\Extension\Twig\AsseticExtension;
 
-class AsseticServiceProvider implements ServiceProviderInterface
+class AsseticServiceProvider implements ServiceProviderInterface, BootableProviderInterface
 {
-    public function register(Application $app)
+    public function register(Container $app)
     {
         $app['assetic.options'] = array();
 
         /**
          * Asset Factory configuration happens here
          */
-        $app['assetic'] = $app->share(function () use ($app) {
+        $app['assetic'] = function () use ($app) {
             $app['assetic.options'] = array_replace(array(
                 'debug'              => isset($app['debug']) ? $app['debug'] : false,
                 'formulae_cache_dir' => null,
@@ -42,54 +45,54 @@ class AsseticServiceProvider implements ServiceProviderInterface
             }
 
             return $app['assetic.factory'];
-        });
+        };
 
         /**
          * Factory
          *
          * @return Assetic\Factory\AssetFactory
          */
-        $app['assetic.factory'] = $app->share(function () use ($app) {
+        $app['assetic.factory'] = function () use ($app) {
             $root = isset($app['assetic.path_to_source']) ? $app['assetic.path_to_source'] : $app['assetic.path_to_web'];
             $factory = new AssetFactory($root, $app['assetic.options']['debug']);
             $factory->setAssetManager($app['assetic.asset_manager']);
             $factory->setFilterManager($app['assetic.filter_manager']);
 
             return $factory;
-        });
+        };
 
         /**
          * Asset writer, writes to the 'assetic.path_to_web' folder
          *
          * @return Assetic\AssetWriter
          */
-        $app['assetic.asset_writer'] = $app->share(function () use ($app) {
+        $app['assetic.asset_writer'] = function () use ($app) {
             return new AssetWriter($app['assetic.path_to_web']);
-        });
+        };
 
         /**
          * Asset manager
          *
          * @return Assetic\AssetManager
          */
-        $app['assetic.asset_manager'] = $app->share(function () use ($app) {
+        $app['assetic.asset_manager'] = function () use ($app) {
             return new AssetManager();
-        });
+        };
 
         /**
          * Filter manager
          *
          * @return Assetic\FilterManager
          */
-        $app['assetic.filter_manager'] = $app->share(function () use ($app) {
+        $app['assetic.filter_manager'] = function () use ($app) {
             return new FilterManager();
-        });
+        };
 
         /**
          * Lazy asset manager for loading assets from $app['assetic.formulae']
          * (will be later maybe removed)
          */
-        $app['assetic.lazy_asset_manager'] = $app->share(function () use ($app) {
+        $app['assetic.lazy_asset_manager'] = function () use ($app) {
             $formulae = isset($app['assetic.formulae']) ? $app['assetic.formulae'] : array();
             $options  = $app['assetic.options'];
             $lazy     = new LazyAssetmanager($app['assetic.factory']);
@@ -112,40 +115,34 @@ class AsseticServiceProvider implements ServiceProviderInterface
             }
 
             return $lazy;
-        });
+        };
 
-        $app['assetic.dumper'] = $app->share(function () use ($app) {
+        $app['assetic.dumper'] = function () use ($app) {
             return new Dumper(
                 $app['assetic.asset_manager'],
                 $app['assetic.lazy_asset_manager'],
                 $app['assetic.asset_writer']
             );
-        });
+        };
 
         if (isset($app['twig'])) {
-            $app['twig'] = $app->share(
-                $app->extend('twig', function ($twig, $app) {
-                    $twig->addExtension(new AsseticExtension($app['assetic']));
+            $app->extend('twig', function ($twig, $app) {
+                $twig->addExtension(new AsseticExtension($app['assetic']));
 
-                    return $twig;
-                })
-            );
+                return $twig;
+            });
 
-            $app['assetic.lazy_asset_manager'] = $app->share(
-                $app->extend('assetic.lazy_asset_manager', function ($am, $app) {
-                    $am->setLoader('twig', new TwigFormulaLoader($app['twig']));
+            $app->extend('assetic.lazy_asset_manager', function ($am, $app) {
+                $am->setLoader('twig', new TwigFormulaLoader($app['twig']));
 
-                    return $am;
-                })
-            );
+                return $am;
+            });
 
-            $app['assetic.dumper'] = $app->share(
-                $app->extend('assetic.dumper', function ($helper, $app) {
-                    $helper->setTwig($app['twig'], $app['twig.loader.filesystem']);
+            $app->extend('assetic.dumper', function ($helper, $app) {
+                $helper->setTwig($app['twig'], $app['twig.loader.filesystem']);
 
-                    return $helper;
-                })
-            );
+                return $helper;
+            });
         }
     }
 

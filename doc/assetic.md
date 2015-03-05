@@ -59,32 +59,28 @@ $app->register(new SilexAssetic\AsseticServiceProvider());
 
 $app['assetic.path_to_web'] = __DIR__ . '/assets';
 $app['assetic.options'] = array(
-	'debug' => true,
+    'debug' => true,
 );
-$app['assetic.filter_manager'] = $app->share(
-    $app->extend('assetic.filter_manager', function($fm, $app) {
-        $fm->set('yui_css', new Assetic\Filter\Yui\CssCompressorFilter(
-            '/usr/share/yui-compressor/yui-compressor.jar'
-        ));
-        $fm->set('yui_js', new Assetic\Filter\Yui\JsCompressorFilter(
-            '/usr/share/yui-compressor/yui-compressor.jar'
-        ));
+$app->extend('assetic.filter_manager', function($fm, $app) {
+    $fm->set('yui_css', new Assetic\Filter\Yui\CssCompressorFilter(
+        '/usr/share/yui-compressor/yui-compressor.jar'
+    ));
+    $fm->set('yui_js', new Assetic\Filter\Yui\JsCompressorFilter(
+        '/usr/share/yui-compressor/yui-compressor.jar'
+    ));
 
-        return $fm;
-    })
-);
-$app['assetic.asset_manager'] = $app->share(
-    $app->extend('assetic.asset_manager', function($am, $app) {
-        $am->set('styles', new Assetic\Asset\AssetCache(
-            new Assetic\Asset\GlobAsset(
-                __DIR__ . '/resources/css/*.css',
-                array($app['assetic.filter_manager']->get('yui_css'))
-            ),
-            new Assetic\Cache\FilesystemCache(__DIR__ . '/cache/assetic')
-        ));
-        $am->get('styles')->setTargetPath('css/styles.css');
+    return $fm;
+});
+$app->extend('assetic.asset_manager', function($am, $app) {
+    $am->set('styles', new Assetic\Asset\AssetCache(
+        new Assetic\Asset\GlobAsset(
+            __DIR__ . '/resources/css/*.css',
+            array($app['assetic.filter_manager']->get('yui_css'))
+        ),
+        new Assetic\Cache\FilesystemCache(__DIR__ . '/cache/assetic')
+    ));
+    $am->get('styles')->setTargetPath('css/styles.css');
 
-        return $am;
-    })
-);
+    return $am;
+});
 ```
