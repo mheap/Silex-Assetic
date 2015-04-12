@@ -106,6 +106,59 @@ class AsseticExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Assetic\\Extension\\Twig\\AsseticExtension', $app['twig']->getExtension('assetic'));
     }
 
+    public function testLazyRouting()
+    {
+        $that = $this; // PHP 5.3 hack
+        $app = new Application();
+        $app->register(new AsseticServiceProvider());
+        $app['assetic'] = null;
+        $app['twig'] = function () {
+            return new \Twig_Environment(new \Twig_Loader_String());
+        };
+
+        $lazyAssetManagerMock = $that->getMockBuilder('Assetic\\Factory\\LazyAssetManager')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $dumperMock = $that->getMockBuilder('SilexAssetic\\Assetic\\Dumper')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $dumperMock->expects($this->exactly(2))->method('addTwigAssets');
+
+        $routerMock = $that->getMockBuilder('SilexAssetic\\Assetic\\Router')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $routerMock->expects($this->once())
+            ->method('routeLazyAssetManager')
+            ->with($lazyAssetManagerMock);
+
+        $app['assetic.lazy_asset_manager'] = function() use ($lazyAssetManagerMock) {
+            return $lazyAssetManagerMock;
+        };
+
+        $app['assetic.dumper'] = function() use ($dumperMock) {
+            return $dumperMock;
+        };
+
+        $app['assetic.router'] = function () use ($routerMock) {
+            return $routerMock;
+        };
+
+        $app['assetic.options'] = array(
+            'auto_dump_assets' => true,
+            'route_assets' => true,
+        );
+        $app->boot();
+        $app->handle(Request::create('/'));
+
+        $app['assetic.options'] = array(
+            'auto_dump_assets' => false,
+            'route_assets' => true,
+        );
+        $app->boot();
+        $app->handle(Request::create('/'));
+    }
+
     public function tearDown()
     {
         if (file_exists(sys_get_temp_dir() . '/' . md5(__FILE__))) {

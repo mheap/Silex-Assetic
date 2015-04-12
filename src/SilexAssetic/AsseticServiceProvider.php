@@ -3,6 +3,7 @@
 namespace SilexAssetic;
 
 use SilexAssetic\Assetic\Dumper;
+use SilexAssetic\Assetic\Router;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
@@ -34,6 +35,7 @@ class AsseticServiceProvider implements ServiceProviderInterface, BootableProvid
                 'debug'              => isset($app['debug']) ? $app['debug'] : false,
                 'formulae_cache_dir' => null,
                 'auto_dump_assets'   => isset($app['debug']) ? !$app['debug'] : true,
+                'route_assets'       => false,
             ), $app['assetic.options']);
 
             // initializing lazy asset manager
@@ -125,6 +127,10 @@ class AsseticServiceProvider implements ServiceProviderInterface, BootableProvid
             );
         };
 
+        $app['assetic.router'] = function() use ($app) {
+            return new Router($app);
+        };
+
         if (isset($app['twig'])) {
             $app->extend('twig', function ($twig, $app) {
                 $twig->addExtension(new AsseticExtension($app['assetic']));
@@ -165,16 +171,23 @@ class AsseticServiceProvider implements ServiceProviderInterface, BootableProvid
         $app->after(function () use ($app) {
             // Boot assetic
             $assetic = $app['assetic'];
+            if (isset($app['assetic.options']['auto_dump_assets']) && $app['assetic.options']['auto_dump_assets']) {
+                $helper = $app['assetic.dumper'];
+                if (isset($app['twig'])) {
+                    $helper->addTwigAssets();
+                }
+                $helper->dumpAssets();
+            } elseif (isset($app['assetic.options']['route_assets']) && $app['assetic.options']['route_assets']) {
+                /** @var Dumper $dumper */
+                $dumper = $app['assetic.dumper'];
+                if (isset($app['twig'])) {
+                    $dumper->addTwigAssets();
+                }
 
-            if (!isset($app['assetic.options']['auto_dump_assets']) ||
-                !$app['assetic.options']['auto_dump_assets']) {
-                return;
+                /** @var Router $router */
+                $router = $app['assetic.router'];
+                $router->routeLazyAssetManager($app['assetic.lazy_asset_manager']);
             }
-            $helper = $app['assetic.dumper'];
-            if (isset($app['twig'])) {
-                $helper->addTwigAssets();
-            }
-            $helper->dumpAssets();
         });
     }
 }
