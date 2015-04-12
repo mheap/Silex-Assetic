@@ -25,7 +25,7 @@
     "require-dev": {
         "silex/silex": "~2.0@dev",
         "twig/twig": "~1.2",
-        "phpunit/phpunit": "~3.7.10"
+        "phpunit/phpunit": "~4.6"
     },
     "suggest": {
         "twig/twig": "~1.2"
