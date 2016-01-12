@@ -43,7 +43,7 @@ class AsseticExtensionTest extends \PHPUnit_Framework_TestCase
         $app->register(new AsseticServiceProvider());
         $app['assetic.path_to_web'] = sys_get_temp_dir();
 
-        $app['assetic.filter_manager'] = $app->extend('assetic.filter_manager', function($fm, $app) {
+        $app->extend('assetic.filter_manager', function($fm, $app) {
             $fm->set('test_filter', new \Assetic\Filter\CssMinFilter());
 
             return $fm;
