@@ -121,19 +121,19 @@ class AsseticServiceProvider implements ServiceProviderInterface, BootableProvid
         };
 
         if (isset($app['twig'])) {
-            $app['twig'] = $app->extend('twig', function ($twig, $app) {
+            $app->extend('twig', function ($twig, $app) {
                 $twig->addExtension(new AsseticExtension($app['assetic']));
 
                 return $twig;
             });
 
-            $app['assetic.lazy_asset_manager'] = $app->extend('assetic.lazy_asset_manager', function ($am, $app) {
+            $app->extend('assetic.lazy_asset_manager', function ($am, $app) {
                 $am->setLoader('twig', new TwigFormulaLoader($app['twig']));
 
                 return $am;
             });
 
-            $app['assetic.dumper'] = $app->extend('assetic.dumper', function ($helper, $app) {
+            $app->extend('assetic.dumper', function ($helper, $app) {
                 $helper->setTwig($app['twig'], $app['twig.loader.filesystem']);
 
                 return $helper;
